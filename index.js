@@ -56,45 +56,45 @@ client.connect((err) => {
         });
         console.log(newBooking);
     });
-    // app.get('/bookings', (req, res) => {
-    //     console.log(req.query.email);
-    //     const bearer = req.headers.authorization;
-    //     console.log(bearer);
-    //     if (bearer && bearer.startsWith('Bearer ')) {
-    //         const idToken = bearer.split(' ')[1];
-    //         console.log({ idToken });
-    //         admin
-    //             .auth()
-    //             .verifyIdToken(idToken)
-    //             .then((decodedToken) => {
-    //                 const tokenEmail = decodedToken.email;
-    //                 const queryEmail = req.query.email;
-    //                 if (tokenEmail == queryEmail) {
-    //                     orders
-    //                         .find({ email: queryEmail })
-    //                         .toArray((err, documents) => {
-    //                             res.status(200).send(documents);
-    //                         });
-    //                 } else {
-    //                     res.status(401).send('Unauthorized Access');
-    //                 }
-
-    //                 // ...
-    //             })
-    //             .catch((error) => {
-    //                 res.status(401).send('Unauthorized Access');
-    //             });
-    //     } else {
-    //         res.status(401).send('Unauthorized Access');
-    //     }
-    // });
     app.get('/bookings', (req, res) => {
-        const userEmail = req.query.email;
-                        orders.find({ email:userEmail})
+        console.log(req.query.email);
+        const bearer = req.headers.authorization;
+        console.log(bearer);
+        if (bearer && bearer.startsWith('Bearer ')) {
+            const idToken = bearer.split(' ')[1];
+            console.log({ idToken });
+            admin
+                .auth()
+                .verifyIdToken(idToken)
+                .then((decodedToken) => {
+                    const tokenEmail = decodedToken.email;
+                    const queryEmail = req.query.email;
+                    if (tokenEmail == queryEmail) {
+                        orders
+                            .find({ email: queryEmail })
                             .toArray((err, documents) => {
-                                res.send(documents);
-                            })
-                        });
+                                res.status(200).send(documents);
+                            });
+                    } else {
+                        res.status(401).send('Unauthorized Access');
+                    }
+
+                    // ...
+                })
+                .catch((error) => {
+                    res.status(401).send('Unauthorized Access');
+                });
+        } else {
+            res.status(401).send('Unauthorized Access');
+        }
+    });
+    // app.get('/bookings', (req, res) => {
+    //     const userEmail = req.query.email;
+    //                     orders.find({ email:userEmail})
+    //                         .toArray((err, documents) => {
+    //                             res.send(documents);
+    //                         })
+    //                     });
 });
 
 app.get('/', (req, res) => {
